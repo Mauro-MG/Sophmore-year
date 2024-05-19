@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .header .welcome {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+        .header .account, .header .cart, .header .all-products {
+            background-color: #f1c40f;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            color: #333;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-left: 5px;
+        }
+        .header .account:hover, .header .cart:hover, .header .all-products:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+        .header .logout {
+            font-size: 16px;
+            color: #333;
+            text-decoration: none;
+            background-color: #f1c40f;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-left: 10px;
+        }
+        .header .logout:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            color: #333;
+            border-bottom: 2px solid #333;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .product-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        .product, .category, .brand {
+            background-color: #e8f5e9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 10px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .product:hover, .category:hover, .brand:hover {
+            background-color: #dcedc8;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .product img, .category img, .brand img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .product-name, .brand-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .product-price {
+            font-size: 14px;
+            color: #333;
+            margin-top: 5px;
+        }
+        .product-price-original {
+            text-decoration: line-through;
+            color: #888;
+        }
+        .add-to-cart {
+            background-color: #f1c40f;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 12px;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-top: 10px;
+        }
+        .add-to-cart:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+        .more-button {
+            background-color: #007bff;
+            color: #fff;
+            width: 100%;
+            padding: 8px;
+        }
+        .more-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .brands {
+            margin-bottom: 40px;
+        }
+        .brands h2 {
+            color: #333;
+            border-bottom: 2px solid #333;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .brand {
+            background-color: #e8f5e9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 10px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .brand:hover {
+            background-color: #dcedc8;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .category-grid, .brand-grid {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TIENDA.COM</h1>
+            {% if logged_in %}
+                <span class="welcome">Bienvenid@, {{ nombre }} {{ apellido }}</span>
+                <div class="buttons-container">
+                    <a href="/carrito" class="cart">Carrito</a>
+                    <a href="/account" class="account">Mi cuenta</a>
+                    <a href="/productos" class="all-products">Todos los productos</a>
+                </div>
+                <a href="/logout" class="logout">Cerrar sesión</a>
+            {% else %}
+                <a href="/login" class="account">Mi cuenta</a>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h2>Productos Recomendados</h2>
+            <div class="product-grid">
+                {% for producto in productos_recomendados %}
+                <div class="product">
+                    <a href="{{ url_for('detalles', id_producto=producto.id_producto) }}">
+                        {% if producto.url_imagen %}
+                        <img src="{{ producto.url_imagen }}" alt="{{ producto.nombre_producto }}">
+                        {% endif %}
+                        <div class="product-name">{{ producto.nombre_producto }}</div>
+                        {% if producto.porcentaje %}
+                            <div class="product-price-original">${{ '%.2f' % producto.precio }}</div>
+                            <div class="product-price">${{ '%.2f' % producto.precio_final }}</div>
+                        {% else %}
+                            <div class="product-price">${{ '%.2f' % producto.precio }}</div>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('agregar_carrito', id_producto=producto.id_producto) }}" class="add-to-cart">Agregar al carrito</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+
+        <div class="section">
+            <h2>Ofertas</h2>
+            <div class="product-grid">
+                {% for producto in productos_oferta %}
+                <div class="product">
+                    <a href="{{ url_for('detalles', id_producto=producto.id_producto) }}">
+
+                        {% if producto.url_imagen %}
+                        <img src="{{ producto.url_imagen }}" alt="{{ producto.nombre_producto }}">
+                        {% endif %}
+                        <div class="product-name">{{ producto.nombre_producto }}</div>
+                        {% if producto.porcentaje %}
+                            <div class="product-price-original">${{ '%.2f' % producto.precio }}</div>
+                            <div class="product-price">${{ '%.2f' % producto.precio_final }}</div>
+                        {% else %}
+                            <div class="product-price">${{ '%.2f' % producto.precio }}</div>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('agregar_carrito', id_producto=producto.id_producto) }}" class="add-to-cart">Agregar al carrito</a>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="{{ url_for('ofertas') }}" class="more-button">Más...</a>
+        </div>
+
+        <div class="section">
+            <h2>Categorías</h2>
+            <div class="category-grid">
+                {% for categoria in categorias %}
+                <a href="{{ url_for('categoria', id_categoria=categoria[0]) }}" class="category">
+                    <!-- Asumiendo que el primer valor es el ID de la categoría -->
+                    <img src="{{ categoria[2] }}" alt="{{ categoria[1] }}">
+                    <div>{{ categoria[1] }}</div> <!-- El segundo valor sería el nombre de la categoría -->
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        
+        <div class="brands">
+            <h2>Marcas</h2>
+            <div class="brand-grid">
+                {% for marca in marcas %}
+                <a href="{{ url_for('marca', id_marca=marca[0]) }}" class="brand">
+                    <!-- Asumiendo que el primer valor es el ID de la marca -->
+                    <img src="{{ marca[2] }}" alt="{{ marca[1] }}">
+                    <div class="brand-name">{{ marca[1] }}</div> <!-- El segundo valor sería el nombre de la marca -->
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

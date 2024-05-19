@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .product img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+        }
+        .product-info {
+            flex-grow: 1;
+            padding: 0 20px;
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .product-price {
+            font-size: 16px;
+        }
+        .product-quantity {
+            width: 50px;
+        }
+        .product-actions {
+            display: flex;
+            align-items: center;
+        }
+        .action-button {
+            padding: 5px 10px;
+            margin-left: 10px;
+            background-color: #f1c40f;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+        .action-button:hover {
+            background-color: #e1b40e;
+        }
+        .total-price {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 20px;
+        }
+        .address-selection,
+        .payment-selection {
+            margin-top: 20px;
+        }
+        .address-selection h3,
+        .payment-selection h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .address-selection select,
+        .payment-selection select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .new-address-form textarea,
+        .new-address-form input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .new-address-form button {
+            padding: 10px;
+            background-color: #f1c40f;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .new-address-form button:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+        .buy-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #fff;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .buy-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Carrito de Compras</h1>
+            <div class="buttons-container">
+                <a href="/account" class="account">Mi cuenta</a>
+                <a href="/logout" class="logout">Cerrar sesión</a>
+            </div>
+        </div>
+        {% for item in items %}
+        <div class="product">
+            <img src="{{ item.url_imagen }}" alt="{{ item.nombre_producto }}">
+            <div class="product-info">
+                <div class="product-name">{{ item.nombre_producto }}</div>
+                <div class="product-price">
+                    {% if item.porcentaje %}
+                    Original: ${{ '%.2f' % item.precio }}<br>
+                    Con descuento: ${{ '%.2f' % (item.precio * (1 - item.porcentaje / 100)) }}
+                    {% else %}
+                    Precio: ${{ '%.2f' % item.precio }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="product-actions">
+                <form action="{{ url_for('carrito') }}" method="POST">
+                    <input type="hidden" name="id_producto" value="{{ item.id_producto }}">
+                    <input type="hidden" name="action" value="update">
+                    <input type="number" class="product-quantity" name="cantidad" value="{{ item.cantidad }}" min="1" max="{{ item.cantidad_stock }}">
+                    <button type="submit" class="action-button">Actualizar</button>
+                </form>
+                <form action="{{ url_for('carrito') }}" method="POST">
+                    <input type="hidden" name="id_producto" value="{{ item.id_producto }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="action-button">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="total-price">
+            Total: ${{ '%.2f' % total }}
+        </div>
+
+        <div class="address-selection">
+            <h3>Seleccionar Dirección</h3>
+            <form method="POST" action="{{ url_for('carrito') }}">
+                <select name="direccion" required>
+                    {% for direccion in direcciones %}
+                    <option value="{{ direccion.id_direccion_cliente }}">
+                        {{ direccion.calle }}, {{ direccion.colonia }}, {{ direccion.ciudad }}, {{ direccion.estado }}, {{ direccion.pais }} - {{ direccion.codigo_postal }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <h3>Agregar Nueva Dirección</h3>
+                <div class="new-address-form">
+                    <textarea name="calle" placeholder="Calle" required></textarea>
+                    <input type="text" name="colonia" placeholder="Colonia" required>
+                    <input type="text" name="codigo_postal" placeholder="Código Postal" required>
+                    <input type="text" name="ciudad" placeholder="Ciudad" required>
+                    <input type="text" name="estado" placeholder="Estado" required>
+                    <input type="text" name="pais" placeholder="País" required>
+                    <button type="submit" name="action" value="add_address">Agregar Dirección</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="payment-selection">
+            <h3>Seleccionar Método de Pago</h3>
+            <form method="POST" action="{{ url_for('comprar') }}">
+                <select name="metodo_pago" required>
+                    {% for metodo in metodos_pago %}
+                    <option value="{{ metodo.id_metodo_pago }}">{{ metodo.metodo_pago }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="buy-button" name="action" value="comprar">Comprar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Direcciones</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .container h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            table-layout: fixed;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .button {
+            background-color: #f1c40f;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .button:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+        .form-inline {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .form-inline input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .form-inline button {
+            align-self: center;
+        }
+        @media (min-width: 768px) {
+            .form-inline {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .form-inline input {
+                flex: 1 1 calc(33% - 20px);
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+            .form-inline button {
+                flex: 0 0 auto;
+                margin-left: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Mis Direcciones</h2>
+        <form class="form-inline" action="/addresses" method="post">
+            <input type="hidden" name="action" value="add">
+            <input type="text" name="calle" placeholder="Calle" required>
+            <input type="text" name="colonia" placeholder="Colonia" required>
+            <input type="text" name="codigo_postal" placeholder="Código Postal" required>
+            <input type="text" name="ciudad" placeholder="Ciudad" required>
+            <input type="text" name="estado" placeholder="Estado" required>
+            <input type="text" name="pais" placeholder="País" required>
+            <button type="submit" class="button">Agregar Dirección</button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>Calle</th>
+                    <th>Colonia</th>
+                    <th>Código Postal</th>
+                    <th>Ciudad</th>
+                    <th>Estado</th>
+                    <th>País</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for direccion in addresses %}
+                <tr>
+                    <form action="/addresses" method="post">
+                        <td><input type="text" name="calle" value="{{ direccion[1] }}" required></td>
+                        <td><input type="text" name="colonia" value="{{ direccion[2] }}" required></td>
+                        <td><input type="text" name="codigo_postal" value="{{ direccion[3] }}" required></td>
+                        <td><input type="text" name="ciudad" value="{{ direccion[4] }}" required></td>
+                        <td><input type="text" name="estado" value="{{ direccion[5] }}" required></td>
+                        <td><input type="text" name="pais" value="{{ direccion[6] }}" required></td>
+                        <td>
+                            <input type="hidden" name="id_direccion" value="{{ direccion[0] }}">
+                            <input type="hidden" name="action" value="edit">
+                            <button type="submit" class="button">Guardar</button>
+                        </td>
+                    </form>
+                    <td>
+                        <form action="/addresses" method="post">
+                            <input type="hidden" name="id_direccion" value="{{ direccion[0] }}">
+                            <input type="hidden" name="action" value="delete">
+                            <button type="submit" class="button">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

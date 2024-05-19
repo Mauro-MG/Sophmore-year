@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Producto</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .header .welcome {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+        .header .account, .header .cart, .header .all-products {
+            background-color: #f1c40f;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            color: #333;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-left: 5px;
+        }
+        .header .account:hover, .header .cart:hover, .header .all-products:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+        .header .logout {
+            font-size: 16px;
+            color: #333;
+            text-decoration: none;
+            background-color: #f1c40f;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-left: 10px;
+        }
+        .header .logout:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+        .product-detail {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .product-detail img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .product-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .product-price {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .product-price-original {
+            text-decoration: line-through;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .product-description {
+            font-size: 16px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+        .add-to-cart {
+            background-color: #f1c40f;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .add-to-cart:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+        .reviews-section {
+            margin-top: 40px;
+        }
+        .review {
+            margin-bottom: 20px;
+        }
+        .review-author {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .review-date {
+            font-size: 14px;
+            color: #777;
+        }
+        .review-text {
+            font-size: 16px;
+            color: #333;
+            margin-top: 10px;
+        }
+        .review-rating {
+            font-size: 16px;
+            color: #f1c40f;
+        }
+        .review-form {
+            margin-top: 20px;
+        }
+        .review-form textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .review-form select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .review-form button {
+            background-color: #f1c40f;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .review-form button:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TIENDA.COM</h1>
+            {% if logged_in %}
+                <span class="welcome">Los mejores productos para ti, {{ nombre }} {{ apellido }}</span>
+                <div class="buttons-container">
+                    <a href="/carrito" class="cart">Carrito</a>
+                    <a href="/account" class="account">Mi cuenta</a>
+                </div>
+                <a href="/logout" class="logout">Cerrar sesión</a>
+            {% else %}
+                <div class="buttons-container">
+                    <a href="/login" class="account">Mi cuenta</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="product-detail">
+            <h2 class="product-name">{{ producto.nombre_producto }}</h2>
+            {% if producto.porcentaje %}
+            <div class="product-price-original">${{ '%.2f' % producto.precio }}</div>
+            <div class="product-price">${{ '%.2f' % (producto.precio * (1 - producto.porcentaje / 100)) }}</div>
+            {% else %}
+            <div class="product-price">${{ '%.2f' % producto.precio }}</div>
+            {% endif %}
+            <p class="product-description">{{ producto.descripcion_producto }}</p>
+            <div class="product-images">
+                {% for imagen in imagenes %}
+                <img src="{{ imagen.url_imagen }}" alt="{{ producto.nombre_producto }}">
+                {% endfor %}
+            </div>
+            {% if logged_in %}
+            <a href="{{ url_for('agregar_carrito', id_producto=producto.id_producto) }}" class="add-to-cart">Agregar al carrito</a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="add-to-cart">Agregar al carrito</a>
+            {% endif %}
+        </div>
+
+        <div class="reviews-section">
+            <h3>Reseñas</h3>
+            {% if resenas %}
+            {% for resena in resenas %}
+            <div class="review">
+                <div class="review-author">{{ resena.nombre }} {{ resena.apellido }}</div>
+                <div class="review-date">{{ resena.fecha }}</div>
+                <div class="review-text">{{ resena.reseña }}</div>
+                <div class="review-rating">Calificación: {{ resena.calificacion }}</div>
+            </div>
+            {% endfor %}
+            <div>
+                Total de reseñas: {{ resena_info.total_resenas }} <br>
+                Calificación promedio: {{ '%.1f' % resena_info.promedio_calificacion }}
+            </div>
+            {% else %}
+            <p>No hay reseñas aún. Sé el primero en escribir una.</p>
+            {% endif %}
+        </div>
+
+        <div class="review-form">
+            <h3>Escribir una reseña</h3>
+            <form method="post">
+                <textarea name="resena" placeholder="Escribe tu reseña aquí..." required></textarea>
+                <select name="calificacion" required>
+                    <option value="">Selecciona una calificación</option>
+                    <option value="1">1 - Muy malo</option>
+                    <option value="2">2 - Malo</option>
+                    <option value="3">3 - Regular</option>
+                    <option value="4">4 - Bueno</option>
+                    <option value="5">5 - Excelente</option>
+                </select>
+                <button type="submit">Enviar reseña</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofertas</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .header .welcome {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+        .header .account, .header .cart, .header .all-products {
+            background-color: #f1c40f;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            color: #333;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-left: 5px;
+        }
+        .header .account:hover, .header .cart:hover, .header .all-products:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+        .header .logout {
+            font-size: 16px;
+            color: #333;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        .header .logout:hover {
+            text-decoration: underline;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            color: #333;
+            border-bottom: 2px solid #333;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .product-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        .product {
+            background-color: #e8f5e9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 10px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .product:hover {
+            background-color: #dcedc8;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .product img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .product-price {
+            font-size: 14px;
+            color: #333;
+            margin-top: 5px;
+        }
+        .product-price-original {
+            text-decoration: line-through;
+            color: #888;
+        }
+        .add-to-cart {
+            background-color: #f1c40f;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 12px;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-top: 10px;
+        }
+        .add-to-cart:hover {
+            background-color: #e1b40e;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TIENDA.COM</h1>
+            {% if logged_in %}
+                <span class="welcome">Los mejores productos para ti, {{ nombre }} {{ apellido }}</span>
+                <div class="buttons-container">
+                    <a href="/carrito" class="cart">Carrito</a>
+                    <a href="/account" class="account">Mi cuenta</a>
+                </div>
+                <a href="/logout" class="logout">Cerrar sesión</a>
+            {% else %}
+                <div class="buttons-container">
+                    <a href="/login" class="account">Mi cuenta</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h2>Ofertas</h2>
+            <div class="product-grid">
+                {% for producto in productos_oferta %}
+                <div class="product">
+                    <a href="{{ url_for('detalles', id_producto=producto.id_producto) }}">
+
+                        {% if producto.url_imagen %}
+                        <img src="{{ producto.url_imagen }}" alt="{{ producto.nombre_producto }}">
+                        {% endif %}
+                        <div class="product-name">{{ producto.nombre_producto }}</div>
+                        {% if producto.porcentaje %}
+                            <div class="product-price-original">${{ '%.2f' % producto.precio }}</div>
+                            <div class="product-price">${{ '%.2f' % producto.precio_final }}</div>
+                        {% else %}
+                            <div class="product-price">${{ '%.2f' % producto.precio }}</div>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('agregar_carrito', id_producto=producto.id_producto) }}" class="add-to-cart">Agregar al carrito</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
